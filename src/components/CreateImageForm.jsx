@@ -20,7 +20,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
     }, []);
 
     const handleFinalForm = async () => {
-            const prompt = `
+        const prompt = `
                         # 역할
                         너는 북커버 제작 담당자야. 
                         
@@ -39,21 +39,21 @@ function CreateImageForm({title, author, content, onAddBook}) {
                 setCoverImageUrl('./test_src/loading.gif');
                 setLoading(true);
             }
+            const res = await fetch("http://localhost:3001/api/image", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "gpt-image-1",
+                    prompt,
+                    n : 1,
+                    size: "1024x1536",
+                    quality,
+                    output_format: 'png'
+                }),
+            });
             
-            const res = await fetch('https://api.openai.com/v1/images/generations', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${ai_api_key}`
-                     },
-            body: JSON.stringify({
-                                    model: 'gpt-image-1',
-                                    prompt,
-                                    n: 1,
-                                    size: '1024x1536',
-                                    quality,
-                                    output_format: 'png'
-                                }),
-                    });
             setLoading(false);
 
             if (!res.ok) {
@@ -66,40 +66,46 @@ function CreateImageForm({title, author, content, onAddBook}) {
             }
 
             const data = await res.json();
+            console.log("OPENAI RESPONSE:", data);
             const b64Json = data?.data?.[0]?.b64_json;
             if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
             
             const imageUrl = `data:image/png;base64,${b64Json}`;
             setCoverImageUrl(imageUrl);
-            } catch (err) { console.error(err); }
-            
-            const newBook = {
-                title,
-                content,
-                author,
-                likes: 0,
-                views: 0,
-                coverImageUrl,
-                createdAt,
-                updatedAt,
-            }
-
-            if (onAddBook) {
-                await onAddBook(newBook)
-                return
-            }
-
-            try {
-                const res = await fetch('http://localhost:3000/books', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(newBook)
-                })
-                console.log(res.ok)
-            } catch (err) {
-                console.error(err)
-            }
+        } catch (err) { console.error(err); }
+        
+        const generateId = () => {
+            return Math.floor(Math.random() * 1000000)
         }
+
+        const newBook = await {
+            id : generateId(),
+            title,
+            content,
+            author,
+            likes: 0,
+            views: 0,
+            coverImageUrl,
+            createdAt,
+            updatedAt,
+        }
+            
+        if (onAddBook) {
+            await onAddBook(newBook)
+            return
+        }
+
+        try {
+            const res = await fetch('http://localhost:3000/books', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(newBook)
+            })
+            console.log(res.ok)
+        } catch (err) {
+            console.error(err)
+        }
+    }
     
     return (
         <form className="create-write-layout">
