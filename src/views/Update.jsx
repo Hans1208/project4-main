@@ -4,6 +4,7 @@ import UpdateForm from '../components/UpdateForm'
 
 export default function Update({ bookURL, onUpdate }) {
   const { id } = useParams()
+  console.log("id:", id)
   const navigate = useNavigate()
   
   const [title, setTitle] = useState('')
@@ -39,7 +40,7 @@ export default function Update({ bookURL, onUpdate }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onUpdate(Number(id), { title, author, content })
+    onUpdate(id, { title, author, content })
   }
 
   if (loading) return <p className="loading-text">도서 정보를 불러오는 중입니다...</p>;
