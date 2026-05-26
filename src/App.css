@@ -306,6 +306,13 @@
   font-weight: 900;
 }
 
+.list-book-content em {
+  color: #d18b00;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
 .list-book-desc {
   margin: 0 0 14px;
   color: var(--color-body);

@@ -146,7 +146,7 @@ function App() {
                     />
                   </label>
                 </div>
-                <List query={query} books={books} onDelete={handleDelete} />
+                <List query={query} books={books} onDelete={handleDelete} onLike={handleLike} />
               </>
             }
           />

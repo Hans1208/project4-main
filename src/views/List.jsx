@@ -24,15 +24,18 @@ function Card({ item, onClick }) {
       <div className="list-book-content">
         <h3>{item.title}</h3>
         <p className="list-book-author">작가: {item.author || '저자 미상'}</p>
+        <em>좋아요 {item.likes || 0}</em>
       </div>
     </article>
   )
 }
 
-export default function List({ query = '', books = [] }) {
+export default function List({ query = '', books = [], onLike }) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState(null)
+  const [selectedId, setSelectedId] = useState(null)
+
+  const selected = selectedId ? books.find((book) => book.id === selectedId) : null
 
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -55,13 +58,13 @@ export default function List({ query = '', books = [] }) {
   }, [query, books])
 
   const handleOpen = (item) => {
-    setSelected(item)
+    setSelectedId(item.id)
     setOpen(true)
   }
 
   const handleClose = () => {
     setOpen(false)
-    setSelected(null)
+    setSelectedId(null)
   }
 
   const handleLikeClick = () => {
