@@ -541,7 +541,8 @@
 }
 
 .book-like-button,
-.book-edit-button {
+.book-edit-button,
+.modal-button {
   border: 0;
   border-radius: var(--radius-md);
   padding: 10px 16px;
@@ -555,9 +556,20 @@
   color: var(--color-navy);
 }
 
-.book-edit-button {
+.book-edit-button,
+.modal-button.modal-button--edit {
   background: var(--color-navy);
   color: var(--color-white);
+}
+
+.modal-button {
+  background: #f3f1ed;
+  color: var(--color-navy);
+}
+
+.modal-button.modal-button--delete {
+  background: #d64545;
+  color: #ffffff;
 }
 
 /* UI/레이아웃팀 담당: Create 새글작성 페이지 UI/레이아웃 */

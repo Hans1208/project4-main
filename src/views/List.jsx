@@ -30,7 +30,7 @@ function Card({ item, onClick }) {
   )
 }
 
-export default function List({ query = '', books = [], onLike }) {
+export default function List({ query = '', books = [], onDelete, onLike }) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
@@ -69,11 +69,13 @@ export default function List({ query = '', books = [], onLike }) {
 
 
   const handleDeleteClick = async () => {
+    if (!selected || !onDelete) return
+
     if (window.confirm('정말 이 도서를 삭제하시겠습니까?')) {
-      await onDelete(selected.id); 
-      handleClose();               
+      await onDelete(selected.id)
+      handleClose()
     }
-  };
+  }
 
   const handleLikeClick = () => {
     if (selected && onLike) {
@@ -125,38 +127,34 @@ export default function List({ query = '', books = [], onLike }) {
               alt={selected.title}
             />
             <p className="modal-subtitle">{selected.content}</p>
-            <div className="modal-actions">
-              <button
-                className="modal-button"
-                onClick={() => {
-                  navigate(`/update/${selected.id}`)
-                }}
-              >
-                수정
-              </button>
-
-              <button 
-                className="modal-button" 
-                onClick={handleDeleteClick}
-              >
-                삭제
-              </button>
-            </div>
 
             {/* UI/레이아웃팀 담당: 좋아요 개수 표시 UI만 배치 */}
             {/* TODO: 좋아요 클릭 기능과 PATCH /books/id 연결은 CRUD 담당자가 처리 */}
             <div className="book-detail-actions">
+              
               <div className="book-like-info">
                 <span>좋아요</span>
                 <strong>{selected.likes || 0}</strong>
               </div>
-
+                <button
+                type="button"
+                className="modal-button modal-button--delete"
+                onClick={handleDeleteClick}
+              >
+                삭제
+              </button>
               <button type="button" className="book-like-button" onClick={handleLikeClick}>
                 <span aria-hidden="true">😍</span>
                 좋아요
               </button>
 
-              <button type="button" className="book-edit-button">
+              <button
+                type="button"
+                className="modal-button modal-button--edit"
+                onClick={() => {
+                  navigate(`/update/${selected.id}`)
+                }}
+              >
                 수정
               </button>
             </div>
