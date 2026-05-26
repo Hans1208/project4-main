@@ -105,21 +105,15 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
     <div className="list-page-wrap">
       {/* UI/레이아웃팀 담당: List 페이지 카드 그리드 레이아웃 */}
       {isEmpty ? (
-      <p className="list-state-message">
-        {isSearching ? '검색 결과가 없습니다.' : '등록된 도서가 없습니다.'}
-      </p>
+        <p className="list-state-message">
+          {isSearching ? '검색 결과가 없습니다. 다른 검색어를 입력해 보세요.' : '등록된 도서가 없습니다.'}
+        </p>
       ) : (
-      <section className="list-book-grid">
-        {filteredItems.length > 0 ? (
-          filteredItems.map((item) => (
+        <section className="list-book-grid">
+          {filteredItems.map((item) => (
             <Card key={item.id} item={item} onClick={() => handleOpen(item)} />
-          ))
-        ) : (
-          <div className="empty-state">
-            <p>검색 결과가 없습니다. 다른 검색어를 입력해 보세요.</p>
-          </div>
-        )}
-      </section>
+          ))}
+        </section>
       )}
 
       {open && selected && (
