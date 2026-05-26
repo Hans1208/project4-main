@@ -43,6 +43,13 @@ export default function List({ query = '', books = [] }) {
     setSelected(null)
   }
 
+  const handleDeleteClick = async () => {
+    if (window.confirm('정말 이 도서를 삭제하시겠습니까?')) {
+      await onDelete(selected.id); 
+      handleClose();               
+    }
+  };
+
   return (
     <div>
       <div className="image-grid">
@@ -72,6 +79,13 @@ export default function List({ query = '', books = [] }) {
                 }}
               >
                 수정
+              </button>
+
+              <button 
+                className="modal-button" 
+                onClick={handleDeleteClick}
+              >
+                삭제
               </button>
             </div>
           </div>
