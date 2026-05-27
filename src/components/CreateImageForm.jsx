@@ -68,7 +68,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
                 quality,
                 output_format: 'png',
                 }),
-            })
+            }),
 
             if (!res.ok) {
                 setCoverImageUrl('./test_src/error.png');
