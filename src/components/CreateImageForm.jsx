@@ -1,6 +1,21 @@
 import {useState, useEffect} from 'react'
 import Dropdown from './Dropdown'
 
+function getSavableImageUrl(imageUrl) {
+  const invalidPreviewImages = [
+    '/test_src/error.png',
+    './test_src/error.png',
+    '/test_src/loading.gif',
+    './test_src/loading.gif',
+  ]
+
+  if (!imageUrl || invalidPreviewImages.includes(imageUrl)) {
+    return '/noImage.jpg'
+  }
+
+  return imageUrl
+}
+
 function CreateImageForm({title, author, content, onAddBook}) {
     const [today, setToday] = useState('');
     const [createdAt, setCreatedAt] = useState('');
@@ -28,7 +43,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
             author,
             likes: 0,
             views: 0,
-            coverImageUrl,
+            coverImageUrl: getSavableImageUrl(coverImageUrl),
             createdAt: createdAt || now,
             updatedAt: now,
         }

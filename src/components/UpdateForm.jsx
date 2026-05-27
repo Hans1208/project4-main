@@ -4,7 +4,7 @@ import UpdateImageControls from './UpdateImageControls'
 import UpdatePreviewCard from './UpdateImagePreview'
 
 function normalizeImageSrc(src) {
-  if (!src || !src.trim()) return '/test_src/01.png'
+  if (!src || !src.trim()) return '/public/noImage.jpg'
 
   if (
     src.startsWith('data:') ||
@@ -20,6 +20,21 @@ function normalizeImageSrc(src) {
   }
 
   return `/${src}`
+}
+
+function getSavableImageUrl(imageUrl) {
+  const invalidPreviewImages = [
+    '/test_src/error.png',
+    './test_src/error.png',
+    '/test_src/loading.gif',
+    './test_src/loading.gif',
+  ]
+
+  if (!imageUrl || invalidPreviewImages.includes(imageUrl)) {
+    return '/noImage.jpg'
+  }
+
+  return imageUrl
 }
 
 function UpdateForm({ initialBook, onSubmit, onCancel }) {
@@ -103,7 +118,7 @@ function UpdateForm({ initialBook, onSubmit, onCancel }) {
       title,
       author,
       content,
-      coverImageUrl,
+      coverImageUrl: getSavableImageUrl(coverImageUrl),
     })
   }
 

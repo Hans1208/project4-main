@@ -21,6 +21,7 @@ function App() {
     async function loadBooks() {
       try {
         const res = await fetch(bookURL)
+        if (!res.ok) {throw new Error('도서 목록을 불러오지 못했습니다.')}
         const data = await res.json()
         setBooks(data)
       } catch (err) {
@@ -84,10 +85,17 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${bookURL}/${id}`, {
+      const res = await fetch(`${bookURL}/${id}`, {
         method: 'DELETE',
       })
-      setBooks(books.filter((book) => book.id !== id))
+
+      if (!res.ok) {
+        throw new Error('도서 삭제에 실패했습니다.')
+      }
+
+      setBooks((prevBooks) =>
+        prevBooks.filter((book) => String(book.id) !== String(id))
+      )
     } catch (err) {
       console.error(err)
     }
@@ -95,14 +103,15 @@ function App() {
 
   const handleLike = async (id) => {
     try {
-      const book = books.find((book) => book.id === id)
+      const book = books.find((book) => String(book.id) === String(id))
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ likes: (book.likes || 0) + 1 }),
       })
+      if (!res.ok) {throw new Error('반응성에 실패했습니다.')}
       const updated = await res.json()
-      setBooks(books.map((book) => (book.id === id ? updated : book)))
+      setBooks(books.map((book) => (String(book.id) === String(id) ? updated : book)))
     } catch (err) {
       console.error(err)
     }
@@ -110,14 +119,15 @@ function App() {
 
   const handleView = async (id) => {
     try {
-      const book = books.find((book) => book.id === id);
+      const book = books.find((book) => String(book.id) === String(id));
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ views: (book.views || 0) + 1 }),
       });
+      if (!res.ok) {throw new Error('조회수에 실패했습니다.')}
       const updated = await res.json();
-      setBooks(books.map((book) => (book.id === id ? updated : book)));
+      setBooks(books.map((book) => (String(book.id) === String(id) ? updated : book)));
     } catch (err) {
       console.error(err);
     }
