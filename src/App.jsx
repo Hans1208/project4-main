@@ -50,8 +50,10 @@ function App() {
       const saved = await res.json()
  
       setBooks((prevBooks) => [saved, ...prevBooks])
+      alert('도서가 등록되었습니다.')
       navigate('/list')
     } catch (err) {
+      alert('도서 등록에 실패했습니다.')
       console.error(err)
       setError(err.message || '도서 등록에 실패했습니다.')
     }
@@ -59,12 +61,14 @@ function App() {
 
   const handleUpdateBook = async (id, updatedFields) => {
     try {
+      
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields),
       })
-
+      // Error: Payload too large. Limit: 102400 bytes
+      // res.ok === false 
       if (!res.ok) {
         throw new Error('도서 수정에 실패했습니다.')
       }
@@ -77,33 +81,26 @@ function App() {
         )
       )
 
+      alert('도서가 수정되었습니다.')
       navigate('/list')
     } catch (err) {
+      alert('도서가 수정에 실패했습니다.')
       console.error(err)
     }
   }
 
   const handleDelete = async (id) => {
   try {
-    // 삭제할 book 찾기
-    const book = books.find((b) => b.id === id);
-
-    // 이미지 파일 삭제
-    if (book?.coverImageUrl) {
-      const filename = book.coverImageUrl.split("/images/")[1]; // "cover_xxx.png"
-      await fetch(`http://localhost:3001/api/image/${filename}`, {
-        method: "DELETE",
-      });
-    }
-
-    
-    await fetch(`${bookURL}/${id}`, {
+       const res = await fetch(`${bookURL}/${id}`, {
        method: "DELETE" 
       });
-
+  
     setBooks(books.filter((b) => b.id !== id));
     if (!res.ok) {throw new Error('삭제에 실패했습니다.')}
+    
+    alert('도서를 삭제했습니다')
   } catch (err) {
+    alert('도서 삭제에 실패했습니다.')
     console.error(err);
   }
 };
@@ -151,18 +148,6 @@ function App() {
     return <>
             <Header /> <p>에러: {error}</p>
           </>;
-  
-
-  // const filteredItems = useMemo(() => {
-  //   const q = query.trim().toLowerCase()
-  //   if (!q) return sampleItems
-  //   return sampleItems.filter((item) => {
-  //     return (
-  //       item.title.toLowerCase().includes(q) ||
-  //       item.subtitle.toLowerCase().includes(q)
-  //     )
-  //   })
-  // }, [query])
 
   return (
     <div className="app-root">
