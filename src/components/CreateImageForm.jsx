@@ -34,7 +34,7 @@ function CreateImageForm({title, author, content, onAddBook}) {
         setUpdatedAt(day);
     }, []);
 
-    const handleFinalForm = async () => {
+    const handlePreviewImage = async () => {
         const prompt = `
                         # 역할
                         너는 북커버 제작 담당자야. 
@@ -48,80 +48,82 @@ function CreateImageForm({title, author, content, onAddBook}) {
                         - 제목 : "${title}"
                         - 내용 요약 : ${content}.
                         `
-        // 1. AI Image 생성
         try {
-            if (loading === false) {
+            if (!loading) {
                 setCoverImageUrl('./test_src/loading.gif');
                 setLoading(true);
             }
-            const res = await fetch("http://localhost:3001/api/image", {
-                method: "POST",
+
+            const res = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`,
                 },
                 body: JSON.stringify({
-                    model: "gpt-image-1",
-                    prompt,
-                    n : 1,
-                    size: "1024x1536",
-                    quality,
-                    output_format: 'png'
+                model: 'gpt-image-1',
+                prompt,
+                n: 1,
+                size: '1024x1536',
+                quality,
+                output_format: 'png',
                 }),
-            });
-            
-            setLoading(false);
+            })
 
             if (!res.ok) {
                 setCoverImageUrl('./test_src/error.png');
-                const errData = await res.json().catch(() => ({}))
-                const status = res.status
-                if (status === 401) throw new Error('API Key가 올바르지 않습니다. 확인 후 다시 시도해주세요.')
-                if (status === 429) throw new Error('요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.')
-                throw new Error(errData?.error?.message || 'OpenAI 이미지 생성에 실패했습니다.')
+                const errData = await res.json().catch(() => ({}));
+                const status = res.status;
+                if (status === 401) throw new Error('API Key가 올바르지 않습니다. 확인 후 다시 시도해주세요.');
+                if (status === 429) throw new Error('요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.');
+                throw new Error(errData?.error?.message || 'OpenAI 이미지 생성에 실패했습니다.');
             }
 
             const data = await res.json();
-            console.log("OPENAI RESPONSE:", data);
             const b64Json = data?.data?.[0]?.b64_json;
             if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.');
-            
+
             const imageUrl = `data:image/png;base64,${b64Json}`;
             setCoverImageUrl(imageUrl);
-        } catch (err) { console.error(err); }
-        
-        const generateId = () => {
-            return Math.floor(Math.random() * 1000000)
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
+    };
 
-        const newBook = await {
-            id : generateId(),
+    const handleSubmitBook = async () => {
+        const generateId = () => Math.floor(Math.random() * 1000000);
+
+        const newBook = {
+            id: generateId(),
             title,
             content,
             author,
             likes: 0,
             views: 0,
-            coverImageUrl,
+            coverImageUrl: getSavableImageUrl(coverImageUrl),
             createdAt,
             updatedAt,
-        }
-            
+        };
+
         if (onAddBook) {
-            await onAddBook(newBook)
-            return
+            await onAddBook(newBook);
+            return;
         }
 
         try {
             const res = await fetch('http://localhost:3000/books', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(newBook)
-            })
-            console.log(res.ok)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newBook),
+            });
+            console.log(res.ok);
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
-    }
-    
+    };
+
     return (
         <form className="create-write-layout">
             <div className="create-write-form">
