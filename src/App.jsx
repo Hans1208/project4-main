@@ -96,7 +96,6 @@ function App() {
       });
     }
 
-    
     await fetch(`${bookURL}/${id}`, {
        method: "DELETE" 
       });
@@ -153,17 +152,6 @@ function App() {
           </>;
   
 
-  // const filteredItems = useMemo(() => {
-  //   const q = query.trim().toLowerCase()
-  //   if (!q) return sampleItems
-  //   return sampleItems.filter((item) => {
-  //     return (
-  //       item.title.toLowerCase().includes(q) ||
-  //       item.subtitle.toLowerCase().includes(q)
-  //     )
-  //   })
-  // }, [query])
-
   return (
     <div className="app-root">
       <Header />
@@ -175,7 +163,6 @@ function App() {
             path="/list"
             element={
               <>
-                {/* UI/레이아웃팀 담당: List 검색창 위치/디자인 개선 */}
                 <div className="list-search-area">
                   <label className="list-search-box">
                     <span className="search-icon">🔍</span>
