@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './App.css'
 import List from './views/List'
 import Header from './components/Header'
+import Lower from './components/Lower'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 
 import Home from './views/Home'
@@ -154,14 +155,26 @@ function App() {
   
 
   if (loading)
-    return <>
-            <Header /> <p>불러오는 중...</p>
-          </>;
+    return (
+      <>
+        <Header />
+        <main className="app-main">
+          <p>불러오는 중...</p>
+        </main>
+        <Lower />
+      </>
+    )
   
   if (error)
-    return <>
-            <Header /> <p>에러: {error}</p>
-          </>;
+    return (
+      <>
+        <Header />
+        <main className="app-main">
+          <p>에러: {error}</p>
+        </main>
+        <Lower />
+      </>
+    )
   
 
   // const filteredItems = useMemo(() => {
@@ -207,6 +220,7 @@ function App() {
           <Route path= "/update/:id" element={<Update bookURL={bookURL} onUpdate={handleUpdateBook} />} />
         </Routes>
       </main>
+      <Lower />
     </div>
   )
 }
