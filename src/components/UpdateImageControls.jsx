@@ -1,4 +1,5 @@
 import Dropdown from './Dropdown'
+import MaskedApiKeyInput from './MaskedApiKeyInput'
 
 function UpdateImageControls({
   apiKey,
