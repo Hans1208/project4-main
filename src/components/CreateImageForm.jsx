@@ -67,9 +67,8 @@ function CreateImageForm({ title,
           prompt,
           n: 1,
           size: imageSize,
-          output_compression: 15,
           quality,
-          output_format: 'jpeg',
+          output_format: 'png',
         }),
       })
 
@@ -88,7 +87,7 @@ function CreateImageForm({ title,
       const b64Json = data?.data?.[0]?.b64_json
       if (!b64Json) throw new Error('이미지 데이터를 받지 못했습니다.')
 
-      setCoverImageUrl(`data:image/png;base64,${b64Json}`)
+      setCoverImageUrl(`data:image/jpeg;base64,${b64Json}`)
       alert('이미지 생성을 완료했습니다.')
     } catch (err) {
       console.error(err);
@@ -113,15 +112,12 @@ function CreateImageForm({ title,
       return
     }
     const newBook = {
-      id: Math.floor(Math.random() * 1000000),
       title,
       author,
       content,
       likes: 0,
       views: 0,
       coverImageUrl: getSavableImageUrl(coverImageUrl),
-      createdAt,
-      updatedAt: new Date().toISOString(),
     }
 
     if (onAddBook) {
