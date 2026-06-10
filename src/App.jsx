@@ -16,7 +16,7 @@ function App() {
   const [error, setError] = useState(null)
 
   const navigate = useNavigate()
-  const bookURL = 'http://localhost:3000/books'
+  const bookURL = 'http://localhost:8080/api/v1/books'
 
   useEffect(() => {
     async function loadBooks() {
@@ -123,7 +123,7 @@ function App() {
   const handleLike = async (id) => {
     try {
       const book = books.find((book) => String(book.id) === String(id))
-      const res = await fetch(`${bookURL}/${id}`, {
+      const res = await fetch(`${bookURL}/${id}/likes`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ likes: (book.likes || 0) + 1 }),
@@ -139,7 +139,7 @@ function App() {
   const handleView = async (id) => {
     try {
       const book = books.find((book) => String(book.id) === String(id));
-      const res = await fetch(`${bookURL}/${id}`, {
+      const res = await fetch(`${bookURL}/${id}/views`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ views: (book.views || 0) + 1 }),

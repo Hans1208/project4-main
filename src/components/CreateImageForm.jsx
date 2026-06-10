@@ -113,7 +113,7 @@ function CreateImageForm({ title,
       return
     }
     const newBook = {
-      id: Math.floor(Math.random() * 1000000),
+      // id: Math.floor(Math.random() * 1000000),
       title,
       author,
       content,
