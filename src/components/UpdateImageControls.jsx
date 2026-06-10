@@ -6,6 +6,8 @@ function UpdateImageControls({
   setApiKey,
   quality,
   setQuality,
+  imageSize,
+  setImageSize,
   loading,
   onPreview,
   onSubmit,
@@ -21,6 +23,15 @@ function UpdateImageControls({
       <div className="create-quality-group">
         <p>품질</p>
         <Dropdown value={quality} onChange={setQuality} />
+      </div>
+
+      <div className="create-quality-group">
+        <p>이미지 크기</p>
+        <select value={imageSize} onChange={(e) => setImageSize(e.target.value)}>
+          <option value="640x1024">640x1024</option>
+          <option value="768x1024">768x1024</option>
+          <option value="896x1280">896x1280</option>
+        </select>
       </div>
 
       <div className="create-action-row">

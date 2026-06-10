@@ -8,7 +8,7 @@ function CreateForm({ onAddBook,onCancel }) {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [quality, setQuality] = useState('medium')
-  const [coverImageUrl, setCoverImageUrl] = useState('/test_src/01.png')
+  const [coverImageUrl, setCoverImageUrl] = useState('noImage.jpg')
 
   return (
     <section className="create-write-page">

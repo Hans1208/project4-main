@@ -16,7 +16,8 @@ function App() {
   const [error, setError] = useState(null)
 
   const navigate = useNavigate()
-  const bookURL = 'http://localhost:8080/api/v1/books'
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  const bookURL = `${API_BASE_URL}/api/v1/books`
 
   useEffect(() => {
     async function loadBooks() {
@@ -44,8 +45,8 @@ function App() {
       })
 
       if (!res.ok) {
-        const errorText = await res.text()
-        throw new Error(errorText || '도서 등록에 실패했습니다.')
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.message || '도서 등록에 실패했습니다.')
       }
 
       const saved = await res.json()
@@ -91,16 +92,6 @@ function App() {
   const handleDelete = async (id) => {
     try {
       const book = books.find((b) => String(b.id) === String(id));
-
-      if (book?.coverImageUrl?.includes('/images/')) {
-        const filename = book.coverImageUrl.split('/images/')[1];
-        if (filename) {
-          await fetch(`http://localhost:3001/api/image/${filename}`, {
-            method: 'DELETE',
-          });
-        }
-      }
-
       const res = await fetch(`${bookURL}/${id}`, {
         method: 'DELETE',
       });
@@ -122,35 +113,47 @@ function App() {
 
   const handleLike = async (id) => {
     try {
-      const book = books.find((book) => String(book.id) === String(id))
       const res = await fetch(`${bookURL}/${id}/likes`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ likes: (book.likes || 0) + 1 }),
       })
-      if (!res.ok) {throw new Error('반응성에 실패했습니다.')}
+
+      if (!res.ok) {
+        throw new Error('좋아요 처리에 실패했습니다.')
+      }
+
       const updated = await res.json()
-      setBooks(books.map((book) => (String(book.id) === String(id) ? updated : book)))
+
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          String(book.id) === String(id) ? updated : book
+        )
+      )
     } catch (err) {
       console.error(err)
     }
-  };
+  }
 
   const handleView = async (id) => {
     try {
-      const book = books.find((book) => String(book.id) === String(id));
       const res = await fetch(`${bookURL}/${id}/views`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ views: (book.views || 0) + 1 }),
-      });
-      if (!res.ok) {throw new Error('조회수에 실패했습니다.')}
-      const updated = await res.json();
-      setBooks(books.map((book) => (String(book.id) === String(id) ? updated : book)));
+      })
+
+      if (!res.ok) {
+        throw new Error('조회수 처리에 실패했습니다.')
+      }
+
+      const updated = await res.json()
+
+      setBooks((prevBooks) =>
+        prevBooks.map((book) =>
+          String(book.id) === String(id) ? updated : book
+        )
+      )
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   
 
