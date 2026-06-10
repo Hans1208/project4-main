@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import './App.css'
 import List from './views/List'
 import Header from './components/Header'
@@ -12,28 +12,42 @@ import Update from './views/Update'
 function App() {
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [page, setPage] = useState(0)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [isLast, setIsLast] = useState(false)
 
   const navigate = useNavigate()
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
   const bookURL = `${API_BASE_URL}/api/v1/books`
 
-  useEffect(() => {
+  const fetchPage = useCallback(async(pageNum) => {
     async function loadBooks() {
+      if (loading || isLast) return
+      setLoading(true)
+
       try {
-        const res = await fetch(bookURL)
+        const res = await fetch(`${bookURL}/page?page=${pageNum}&size=8&sortBy=id`)
         if (!res.ok) {throw new Error('도서 목록을 불러오지 못했습니다.')}
         const data = await res.json()
-        setBooks(data)
+        setBooks(prev => pageNum === 0 ? data.content : [...prev, ...data.content])
+        setIsLast(data.last)
+        setPage(data.number + 1)
       } catch (err) {
         console.error(err)
         setError('데이터를 불러오지 못했어요.')
+      } finally {
+        setLoading(false)
+        setInitialLoading(false)
       }
-      setLoading(false)
     }
 
     loadBooks()
+  }, [loading, isLast, bookURL])
+
+  useEffect(() => {
+    fetchPage(0)
   }, [])
 
   const handleAddBook = async (newBook) => {
@@ -54,10 +68,13 @@ function App() {
       setBooks((prevBooks) => [saved, ...prevBooks])
       alert('도서가 등록되었습니다.')
       navigate('/list')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       alert('도서 등록에 실패했습니다.')
       console.error(err)
       setError(err.message || '도서 등록에 실패했습니다.')
+    } finally {
+      await fetchPage(0)
     }
   }
 
@@ -108,6 +125,8 @@ function App() {
       alert('도서 삭제에 실패했습니다');
       console.error(err);
       setError(err.message || '삭제에 실패했습니다.');
+    } finally {
+      await fetchPage(0)
     }
   }
 
@@ -157,7 +176,7 @@ function App() {
 
   
 
-  if (loading)
+  if (initialLoading)
     return (
       <>
         <Header />
@@ -203,7 +222,7 @@ function App() {
                     />
                   </label>
                 </div>
-                <List query={query} books={books} onDelete={handleDelete} onLike={handleLike} onView={handleView} />
+                <List query={query} books={books} onDelete={handleDelete} loading={loading} isLast={isLast} onLoadMore={() => fetchPage(page)} onLike={handleLike} onView={handleView} />
               </>
             }
           />

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Card({ item, onClick }) {
@@ -36,12 +36,28 @@ function Card({ item, onClick }) {
   )
 }
 
-export default function List({ query = '', books = [], onDelete, onLike, onView }) {
+export default function List({ query = '', books = [], loading, isLast, onLoadMore, onDelete, onLike, onView }) {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const observerRef = useRef() // 스크롤 다운 시, 하단 감지
 
   const selected = selectedId ? books.find((book) => book.id === selectedId) : null
+
+  // 하단 감지
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && !isLast) {
+          onLoadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerRef.current) observer.observe(observerRef.current)
+    return () => observer.disconnect()
+  }, [loading, isLast, onLoadMore])
 
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -105,6 +121,12 @@ export default function List({ query = '', books = [], onDelete, onLike, onView 
           ))}
         </section>
       )}
+
+      {/* 스크롤 감지 */}
+      <div ref={observerRef} style={{ height: '1px' }} />  
+      {/* 스크롤 로딩 */}
+      {loading && <p className="list-state-message">불러오는 중...</p>}
+      {isLast && !loading && <p className="list-state-message">모든 도서를 불러왔습니다 📚</p>}
 
       {open && selected && (
         <div className="book-modal-overlay" onClick={handleClose}>

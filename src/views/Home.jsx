@@ -1,12 +1,31 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function Home({ books = [] }) {
-  const popularBooks = useMemo(() => {
-    return [...books]
-      .sort((a, b) => (b.likes || 0) - (a.likes || 0))
-      .slice(0, 6)
-  }, [books])
+  const [popularBooks, setPopularBooks] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+
+  useEffect(() => {
+    async function fetchPopular() {
+      try {
+        // 좋아요 내림차순으로 6개만 요청
+        const res = await fetch(
+          `${API_BASE_URL}/api/v1/books/page?page=0&size=6&sortBy=likes`
+        )
+        if (!res.ok) throw new Error('인기 도서를 불러오지 못했습니다.')
+        const data = await res.json()
+        setPopularBooks(data.content)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPopular()
+  }, [])
 
   return (
     <section className="home-book-section">
