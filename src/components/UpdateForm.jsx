@@ -43,6 +43,7 @@ function UpdateForm({ initialBook, onSubmit, onCancel }) {
   const [content, setContent] = useState(initialBook.content || '')
 
   const [quality, setQuality] = useState('medium')
+  const [imageSize, setImageSize] = useState('768x1024')
   const [apiKey, setApiKey] = useState('')
   const [imageLoading, setImageLoading] = useState(false)
 
@@ -81,7 +82,7 @@ try {
           model: 'gpt-image-2',
           prompt,
           n: 1,
-          size: '1024x1536',
+          size: imageSize,
           quality,
           output_format: 'png',
         }),
@@ -144,6 +145,8 @@ try {
             setApiKey={setApiKey}
             quality={quality}
             setQuality={setQuality}
+            imageSize={imageSize}
+            setImageSize={setImageSize}
             loading={imageLoading}
             onPreview={handlePreviewImage}
             onSubmit={handleSubmit}
@@ -155,6 +158,7 @@ try {
           coverImageUrl={coverImageUrl}
           title={title}
           quality={quality}
+          imageSize={imageSize}
         />
       </div>
     </section>
